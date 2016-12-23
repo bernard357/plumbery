@@ -82,24 +82,17 @@ Go the directory where pip executable has been put, and ask it to install Apache
     >pip install apache-libcloud
 
 
-Install ca-bundles.cert
------------------------
+Install certificates
+--------------------
 
 Since plumbery interacts with virtual servers over SSH, it relies on some certificates that have to be installed locally.
 As usual with information security, this could be really painful and complicated.
-But hopefully some smart guys have bundled common certificates into a single file, that will make our life easier.
+Hopefully some smart guys have packaged common root certificates, and that will make our life easier.
 
-Download the bundle from following link:
+Go the directory where pip executable has been put, and type the following::
 
-    https://raw.githubusercontent.com/bagder/ca-bundle/master/ca-bundle.crt
+    >pip install certifi
 
-Save the file on local disk, then double-click on it. Microsoft Windows will check your intention. Confirm that you want to add the certificates to your system.
-
-Alternatively, you can achieve the same result from PowerShell:
-
-.. sourcecode:: powershell
-
-    [Environment]::SetEnvironmentVariable("CA_CERTS_PATH", "<location of download of the ca-bundle.crt file>", "Process")
 
 Install plumbery
 ----------------
