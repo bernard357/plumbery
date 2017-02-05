@@ -35,7 +35,7 @@ class EthernetFitting(PlumberyFitting):
         Following directives are handled by this class:
         - name - name of the VLAN - mandatory
         - description
-        - subnet - e.g., '10.2.3.0'
+        - subnet - e.g., '10.2.3.0' - mandatory
 
         Example:
 
