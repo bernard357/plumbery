@@ -87,7 +87,7 @@ class RebootDeployment(Deployment):
                     time.sleep(10)
                     continue
 
-                if 'VMWARE_TOOLS_INVALID_STATUS' in str(feedback):
+                if 'VM_TOOLS_INVALID_STATUS' in str(feedback):
                     if repeats < 5:
                         time.sleep(10)
                         repeats += 1
