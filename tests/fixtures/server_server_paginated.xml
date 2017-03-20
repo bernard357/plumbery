@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<servers xmlns="urn:didata.com:api:cloud:types" pageNumber="1" pageCount="2" totalCount="2" pageSize="250">
+<servers xmlns="urn:didata.com:api:cloud:types" pageNumber="1" pageCount="2" totalCount="2" pageSize="2">
     <!-- MCP 1.0 Server -->
     <server id="e75ead52-692f-4314-8725-c8a4f4d13a87" datacenterId="NA1">
         <name>Production Web Server MCP 1</name>
@@ -47,3 +47,4 @@
         <virtualHardware version="vmx-08" upToDate="false" />
     </server>
 </servers>
+

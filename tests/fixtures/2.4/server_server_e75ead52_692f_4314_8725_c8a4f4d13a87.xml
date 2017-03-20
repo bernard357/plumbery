@@ -2,7 +2,7 @@
 <server xmlns="urn:didata.com:api:cloud:types" id="e75ead52-692f-4314-8725-c8a4f4d13a87" datacenterId="NA9">
         <name>Production Web Server</name>
         <description>Server to host our main web application.</description>
-        <operatingSystem id="WIN2008S32" displayName="WIN2008S/32" family="WINDOWS" />
+
         <cpu count="2" speed="STANDARD" coresPerSocket="1" />
         <memoryGb>4</memoryGb>
         <disk id="c2e1f199-116e-4dbc-9960-68720b832b0a" scsiId="0" sizeGb="50" speed="STANDARD" state="NORMAL" />
@@ -22,6 +22,9 @@
             <requestTime>2015-12-02T11:07:40.000Z</requestTime>
             <userName>devuser1</userName>
         </progress>
-        <vmwareTools versionStatus="CURRENT" runningStatus="RUNNING" apiVersion="9354" />
         <virtualHardware version="vmx-08" upToDate="false" />
+        <guest osCustomization="true">
+            <operatingSystem id="WIN2008S32" displayName="WIN2008S/32" family="WINDOWS" />
+            <vmTools versionStatus="CURRENT" runningStatus="RUNNING" apiVersion="9354" />
+        </guest>
     </server>

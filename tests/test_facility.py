@@ -43,7 +43,7 @@ class FakeDomain:
 
 class FakeImage:
 
-    name = 'RedHat 6 64-bit 4 CPU'
+    name = 'RedHat 6 64-bit 2 CPU'
 
 
 class FakeLocation:
@@ -135,7 +135,7 @@ fakeFittings = {
             'nodes': [{
                 'stackstorm1': {
                     'description': 'fake',
-                    'appliance': 'RedHat 6 64-bit 4 CPU'
+                    'appliance': 'RedHat 6 64-bit 2 CPU'
                     }
                 }]
             }
@@ -152,7 +152,7 @@ fakeFittings = {
             'nodes': [{
                 'stackstorm2': {
                     'description': 'fake',
-                    'appliance': 'RedHat 6 64-bit 4 CPU'
+                    'appliance': 'RedHat 6 64-bit 2 CPU'
                     }
                 }]
             }
