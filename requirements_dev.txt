@@ -1,4 +1,4 @@
-apache-libcloud==1.2.1
+apache-libcloud
 netifaces
 bumpversion==0.5.3
 paramiko
