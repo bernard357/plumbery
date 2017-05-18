@@ -525,8 +525,8 @@ class PreparePolisher(PlumberyPolisher):
         if 'key' in self.settings:
             key = self.settings['key']
 
-            file = os.path.expanduser(key)
-            if os.path.isfile(file):
+            key = os.path.expanduser(key)
+            if os.path.isfile(key):
                 plogging.debug("- using shared key {}".format(key))
                 if self.key_files is None:
                     self.key_files = [key]

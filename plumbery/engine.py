@@ -570,8 +570,8 @@ class PlumberyEngine(object):
             if isinstance(keys, str):
                 keys = [keys]
             for key in keys:
-                file = os.path.expanduser(key)
-                if not os.path.isfile(file):
+                key = os.path.expanduser(key)
+                if not os.path.isfile(key):
                     raise ValueError("Error: missing file {}".format(key))
                 if key not in self._sharedKeyFiles:
                     plogging.debug("- using shared key {}".format(key))
@@ -602,8 +602,8 @@ class PlumberyEngine(object):
 
         key = os.getenv('SHARED_KEY')
         if key is not None:
-            file = os.path.expanduser(key)
-            if not os.path.isfile(file):
+            key = os.path.expanduser(key)
+            if not os.path.isfile(key):
                 raise ValueError(
                     "Error: non-existent file "
                     "SHARED_KEY={}".format(key))
@@ -616,8 +616,8 @@ class PlumberyEngine(object):
                     '~/.ssh/id_dsa.pub', # Unix
                     '~/ssh/id_rsa.pub',  # Windows
                     '~/ssh/id_dsa.pub'): # Windows
-            file = os.path.expanduser(key)
-            if os.path.isfile(file):
+            key = os.path.expanduser(key)
+            if os.path.isfile(key):
                 plogging.debug("- using shared key {}".format(key))
                 self._sharedKeyFiles.append(key)
 
