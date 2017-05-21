@@ -418,12 +418,34 @@ class PlumberyInfrastructure(object):
             if 'description' in blueprint['ethernet']:
                 description = blueprint['ethernet']['description']+' #plumbery'
 
+            # subnet can be 10.11.12.128/26 low
+            tokens = blueprint['ethernet']['subnet'].replace('/', ' ').split()
+            if len(tokens) == 1:
+                tokens.append('24')
+                tokens.append('low')
+
+            elif len(tokens) == 2:
+                tokens.append('low')
+
+            (base, size, gateway) = tokens
+            if gateway not in ('low', 'high'):
+                plogging.info("- skipped - invalid keyword {}".format(gateway))
+                return False
+
+            if gateway == 'low' and (int(size) < 16 or int(size) > 28):
+                plogging.info("- skipped - invalid subnet size")
+                return False
+            if gateway == 'high' and (int(size) < 16 or int(size) > 24):
+                plogging.info("- skipped - invalid subnet size")
+                return False
+
             while True:
                 try:
                     self.network = self.region.ex_create_vlan(
                         network_domain=self.domain,
                         name=networkName,
-                        private_ipv4_base_address=blueprint['ethernet']['subnet'],
+                        private_ipv4_base_address=base,
+                        private_ipv4_prefix_size=int(size),
                         description=description)
                     plogging.info("- in progress")
 
@@ -1193,6 +1215,13 @@ class PlumberyInfrastructure(object):
                     self.region.ex_delete_firewall_rule(rule)
                     plogging.info("- in progress")
 
+    def with_transient_exposure(self):
+        if 'ipv4' not in self.blueprint['domain']:
+            return False
+        if self.blueprint['domain']['ipv4'] in ('transient',):
+            return True
+        return False
+
     def _get_ipv4(self):
         """
         Provides a free public IPv4 if possible
@@ -1239,7 +1268,7 @@ class PlumberyInfrastructure(object):
         else:
             count = self.get_default('ipv4', 2)
 
-        if str(count).lower() == 'auto':
+        if str(count).lower() in ('auto', 'transient'):
             count = actual + 2
 
         if count < 2 or count > 128:
