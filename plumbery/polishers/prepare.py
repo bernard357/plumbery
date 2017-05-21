@@ -606,6 +606,108 @@ class PreparePolisher(PlumberyPolisher):
             plogging.debug("- not beachheading at '{}'".format(
                 self.facility.get_setting('locationId')))
 
+    def attach_node_to_internet(self, node, ports=[]):
+        """
+        Adds address translation for one node
+
+        :param node: node that has to be reachable from the internet
+        :type node: :class:`libcloud.common.Node`
+
+        :param ports: the ports that have to be opened
+        :type ports: a list of ``str``
+
+        """
+
+        plogging.info("Making node '{}' reachable from the internet"
+                     .format(node.name))
+
+        domain = self.container.get_network_domain(
+            self.container.blueprint['domain']['name'])
+
+        internal_ip = node.private_ips[0]
+
+        external_ip = None
+        for rule in self.region.ex_list_nat_rules(domain):
+            if rule.internal_ip == internal_ip:
+                external_ip = rule.external_ip
+                plogging.info("- node is reachable at '{}'".format(external_ip))
+
+        if self.engine.safeMode:
+            plogging.info("- skipped - safe mode")
+            return
+
+        if external_ip is None:
+            external_ip = self.container._get_ipv4()
+
+            if external_ip is None:
+                plogging.info("- no more ipv4 address available -- assign more")
+                return
+
+            while True:
+                try:
+                    self.region.ex_create_nat_rule(
+                        domain,
+                        internal_ip,
+                        external_ip)
+                    plogging.info("- node is reachable at '{}'".format(
+                        external_ip))
+
+                except Exception as feedback:
+                    if 'RESOURCE_BUSY' in str(feedback):
+                        time.sleep(10)
+                        continue
+
+                    elif 'RESOURCE_LOCKED' in str(feedback):
+                        plogging.info("- not now - locked")
+                        return
+
+                    else:
+                        plogging.info("- unable to add address translation")
+                        plogging.error(str(feedback))
+
+                break
+
+        candidates = self.container._list_candidate_firewall_rules(node, ports)
+
+        for rule in self.container._list_firewall_rules():
+
+            if rule.name in candidates.keys():
+                plogging.info("Creating firewall rule '{}'"
+                             .format(rule.name))
+                plogging.info("- already there")
+                candidates = {k: candidates[k]
+                              for k in candidates if k != rule.name}
+
+        for name, rule in candidates.items():
+
+            plogging.info("Creating firewall rule '{}'"
+                         .format(name))
+
+            if self.engine.safeMode:
+                plogging.info("- skipped - safe mode")
+
+            else:
+
+                try:
+
+                    self.container._ex_create_firewall_rule(
+                        network_domain=domain,
+                        rule=rule,
+                        position='LAST')
+
+                    plogging.info("- in progress")
+
+                except Exception as feedback:
+
+                    if 'NAME_NOT_UNIQUE' in str(feedback):
+                        plogging.info("- already there")
+
+                    else:
+                        plogging.info("- unable to create firewall rule")
+                        plogging.error(str(feedback))
+
+        return external_ip
+
     def shine_node(self, node, settings, container):
         """
         prepares a node
@@ -620,6 +722,7 @@ class PreparePolisher(PlumberyPolisher):
         :type container: :class:`plumbery.PlumberyInfrastructure`
 
         """
+        self.container = container
 
         plogging.info("Preparing node '{}'".format(settings['name']))
         if node is None:
@@ -652,6 +755,18 @@ class PreparePolisher(PlumberyPolisher):
         if len(node.public_ips) > 0:
             plogging.info("- node is reachable at '{}'".format(
                 node.public_ips[0]))
+            node.transient = False
+
+        elif container.with_transient_exposure():
+            external_ip = self.attach_node_to_internet(node, ports=['22'])
+            if external_ip is None:
+                plogging.error('- no IP has been assigned')
+                self.report.append({node.name: {
+                    'status': 'unreachable'
+                    }})
+                return
+            node.public_ips = [external_ip]
+            node.transient = True
 
         elif not self.beachheading:
             plogging.error('- node is unreachable')
@@ -675,6 +790,9 @@ class PreparePolisher(PlumberyPolisher):
                 'status': 'failed',
                 'prepares': descriptions
                 }})
+
+        if node.transient:
+            self.container._detach_node_from_internet(node)
 
     def reap(self):
         """
