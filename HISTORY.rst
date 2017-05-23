@@ -3,6 +3,16 @@
 History
 -------
 
+17.5.22
+~~~~~~~
+
+* Introduce new numbering system, based on date of software release
+* Loop on transient VMware tools status (issue #57)
+* Assign public IPv4 addresses temporarily during SSH configuration (issue #53)
+* Configure variable subnets from /16 to /28 (issue #44)
+* Support multiple SSH keys (issues #48, #41)
+* Use certifi package for easy installation on Windows (issue #23)
+
 1.0.4 (2016-12-20)
 ~~~~~~~~~~~~~~~~~~
 
